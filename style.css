@@ -120,6 +120,11 @@ td.active {
     color: var(--text);
 }
 
+tbody.full td.active {
+    background-color: var(--green-text);
+    color: white;
+}
+
 td.active .colored {
     color: var(--text);
 }
@@ -179,12 +184,20 @@ tbody.full .lunch_header.left_column,tbody.full .left_midcolumn {
     border-right: var(--border-width) solid black;
 }
 
+.active.lunch_header.left_column,.active.left_midcolumn {
+    border-right: var(--border-width) solid white;
+}
+
 .lunch_header.right_column,.right_midcolumn {
     border-left: var(--border-width) solid var(--primary);
 }
 
 tbody.full .lunch_header.right_column,tbody.full .right_midcolumn {
     border-left: var(--border-width) solid black;
+}
+
+.active.lunch_header.right_column,.active.right_midcolumn {
+    border-left: var(--border-width) solid white;
 }
 
 .left_midcolumn {
