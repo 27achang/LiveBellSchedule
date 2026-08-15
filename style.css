@@ -1,0 +1,213 @@
+@font-face {
+    font-family: 'Calluna Sans';
+    src: url('fonts/CallunaSans-Regular.eot');
+    src: url('fonts/CallunaSans-Regular.eot?#iefix') format('embedded-opentype'),
+        url('fonts/CallunaSans-Regular.woff') format('woff'),
+        url('fonts/CallunaSans-Regular.woff2') format('woff2'),
+        url('fonts/CallunaSans-Regular.ttf') format('truetype'),
+        url('fonts/CallunaSans-Regular.svg#CallunaSans-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Calluna Sans';
+    src: url('fonts/CallunaSans-Italic.eot');
+    src: url('fonts/CallunaSans-Italic.eot?#iefix') format('embedded-opentype'),
+        url('fonts/CallunaSans-Italic.woff') format('woff'),
+        url('fonts/CallunaSans-Italic.woff2') format('woff2'),
+        url('fonts/CallunaSans-Italic.ttf') format('truetype'),
+        url('fonts/CallunaSans-Italic.svg#CallunaSans-Italic') format('svg');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Calluna Sans';
+    src: url('fonts/CallunaSans-Semibold.eot');
+    src: url('fonts/CallunaSans-Semibold.eot?#iefix') format('embedded-opentype'),
+        url('fonts/CallunaSans-Semibold.woff') format('woff'),
+        url('fonts/CallunaSans-Semibold.woff2') format('woff2'),
+        url('fonts/CallunaSans-Semibold.ttf') format('truetype'),
+        url('fonts/CallunaSans-Semibold.svg#CallunaSans-Bold') format('svg');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Calluna Sans';
+    src: url('fonts/CallunaSans-Bold.eot');
+    src: url('fonts/CallunaSans-Bold.eot?#iefix') format('embedded-opentype'),
+        url('fonts/CallunaSans-Bold.woff') format('woff'),
+        url('fonts/CallunaSans-Bold.woff2') format('woff2'),
+        url('fonts/CallunaSans-Bold.ttf') format('truetype'),
+        url('fonts/CallunaSans-Bold.svg#CallunaSans-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/**
+ * SHC Colors
+ * Colors deduced via:
+ * PDF from SHCP.edu > Zoom to fill in Adobe Acrobat Reader > "Take a snapshot"> Paste into Paint.NET > Color Picker tool
+ */
+
+body {
+    --green-background: #BADCAC;
+    --green-text: #005033;
+    --blue-background: #A0CFDF;
+    --blue-text: #1A5A7D;
+    --gold-background: #F7F0C8;
+    --gold-text: #987E28;
+    --light-blue: #82C1D4;
+    --primary: white;
+    --text: black;
+    --background: white;
+    --column-padding: 20px;
+    --table-font-size: 2em;
+    --border-width: 1.5px;
+    font-family: 'Calluna Sans', 'Helvetica';
+    font-weight: 600;
+    margin: 0px;
+    overflow: hidden;
+    background-color: var(--background);
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    padding: 8px 20px 10px 20px;
+    background-color: var(--primary);
+    color: var(--text);
+}
+
+#header h1 {
+    display: inline-block;
+    margin: 0px;
+    font-size: 2.5em;
+}
+
+#main {
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 2em - 18px);
+}
+
+table {
+    height: fit-content;
+    align-self: center;
+    border-spacing: 0px;
+    box-sizing: content-box;
+}
+
+td {
+    alignment-baseline: middle;
+    font-size: var(--table-font-size);
+    padding: 0.1em 0.2em 0.2em 0.2em;
+    box-sizing: inherit;
+}
+
+td.active {
+    position: relative;
+    background-color: var(--primary);
+    overflow: hidden;
+    color: var(--text);
+}
+
+td.active .colored {
+    color: var(--text);
+}
+
+tr td:first-of-type.active{
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+}
+
+tr td:last-of-type.active{
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+tr td.active.progress-bar-section1::before,tr td.active.progress-bar-section2::before,tr td.active.progress-bar-section3::before,tr td.active.progress-bar-section4::before {
+    content: "";
+    inset: 0;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+tr td.active.progress-bar-section1::before { width: var(--section1-bar-width); }
+tr td.active.progress-bar-section2::before { width: var(--section2-bar-width); }
+tr td.active.progress-bar-section3::before { width: var(--section3-bar-width); }
+tr td.active.progress-bar-section4::before { width: var(--section4-bar-width); }
+
+.left_column {
+    padding-right: var(--column-padding);
+    text-align: right;
+}
+
+.right_column {
+    padding-left: var(--column-padding);
+    text-align: left;
+}
+
+span {
+    font-size: 0.7em;
+}
+
+.colored {
+    color: var(--primary);
+}
+
+.lunch_header {
+    font-weight: bold;
+    text-transform: uppercase;
+    padding-top: 0.2em;
+    margin-top: 0.3em;
+}
+
+.lunch_header.left_column,.left_midcolumn {
+    border-right: var(--border-width) solid var(--primary);
+}
+
+tbody.full .lunch_header.left_column,tbody.full .left_midcolumn {
+    border-right: var(--border-width) solid black;
+}
+
+.lunch_header.right_column,.right_midcolumn {
+    border-left: var(--border-width) solid var(--primary);
+}
+
+tbody.full .lunch_header.right_column,tbody.full .right_midcolumn {
+    border-left: var(--border-width) solid black;
+}
+
+.left_midcolumn {
+    text-align: left;
+    padding-right: var(--column-padding);
+}
+
+.right_midcolumn {
+    text-align: right;
+    padding-left: var(--column-padding);
+}
+
+.last_row_of_subcolumns {
+    padding-bottom: 0.2em;
+    margin-bottom: 0.3em;
+}
+
+.warning {
+    text-align: center;
+}
+
+.mass_warning {
+    font-weight: normal;
+    font-style: italic;
+    font-size: 1.2em;
+}
