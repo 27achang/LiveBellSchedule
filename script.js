@@ -262,6 +262,7 @@ function makeBlueGreenScheduleTable(schedule, blocks_input) {
 function makeGoldScheduleTable(blocks_input) {
     let blocks = blocks_input.split(" ")[0].split(",");
     let pe_health = blocks_input.includes("(") && blocks_input.split(" (")[1].split(")")[0] == "PE/Health";
+    let topic = blocks_input.match(/(?<=\[)[^\[\]]+(?=\])/);
     has_preblock = blocks.includes("7") || blocks.includes("8");
     // let topic;
     // if (blocks_input.includes("[")) topic = blocks_input.split(" [")[1].split("]")[0];
@@ -424,6 +425,7 @@ function makeGoldScheduleTable(blocks_input) {
 function makeFoundersAMScheduleTable(blocks_input) {
     let blocks = blocks_input.split(" ")[0].split(",");
     let pe_health = blocks_input.includes("(") && blocks_input.split(" (")[1].split(")")[0] == "PE/Health";
+    // let topic = blocks_input.match(/(?<=\[)[^\[\]]+(?=\])/);
     has_preblock = blocks.includes("7") || blocks.includes("8");
 
     if (has_preblock) {
@@ -466,11 +468,19 @@ function makeFoundersAMScheduleTable(blocks_input) {
     time2.textContent = "10:45–11:55";
     time2.className = "left_column";
     time2.id = "founders_period_time";
+    // time2.setAttribute("style", "vertical-align: top;");
     row2.appendChild(time2);
     let label2 = document.createElement("td");
     label2.textContent = "Founders Period (F70)";
     label2.className = "right_column";
     label2.id = "founders_period_label";
+    /*if (topic !== null && topic[0].length <= 25) {
+        label2.appendChild(document.createElement("br"));
+        let topic_display = document.createElement("span");
+        topic_display.textContent = "(" + topic[0] + ")";
+        topic_display.className = "colored";
+        label2.appendChild(topic_display);
+    }*/
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
     
@@ -915,7 +925,7 @@ function updateSchedule(blocks_input) {
     // if (current_periods === undefined || current_periods.length == 0 || period_unchanged) {
         current_periods = [];
         let keys = Object.keys(schedule_times);
-        for (let i = 0; i < keys.length; i += 2) {
+        for (let i = 0; i < keys.length - 1; i += 2) {
             // If we are not after the start time of the iterated period, go the next period
             if (timeIsAfterPresent(schedule_times[keys[i]])) continue;
             // If we are not before the end time of the iterated period, go the next period
@@ -939,7 +949,6 @@ function updateSchedule(blocks_input) {
 
         // If we are only in a passing period (no upper or lower period), extend the delay on the interval and terminate execution early (TODO - consider adding visual for passing periods)
         if (current_periods.length == 0) {
-            let keys = Object.keys(schedule_times);
             // If we are after the school day, clear the interval and terminate execution early
             if (timeIsBeforePresent(schedule_times[keys[keys.length - 1]])) {
                 clearInterval(update_interval);
