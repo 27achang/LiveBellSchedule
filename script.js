@@ -279,11 +279,13 @@ function makeGoldScheduleTable(blocks_input) {
         let time1 = document.createElement("td");
         time1.textContent = "8:00–9:15";
         time1.className = "left_column";
+        time1.id = "preblock_time";
         time1.colSpan = 2;
         row1.appendChild(time1);
         let label1 = document.createElement("td");
         label1.textContent = "Block " + blocks[0];
         label1.className = "right_column";
+        label1.id = "preblock_label";
         label1.colSpan = 2;
         if (pe_health) {
             label1.textContent += " ";
@@ -300,11 +302,13 @@ function makeGoldScheduleTable(blocks_input) {
     let time2 = document.createElement("td");
     time2.textContent = "9:30–10:40";
     time2.className = "left_column";
+    time2.id = "period1_time";
     time2.colSpan = 2;
     row2.appendChild(time2);
     let label2 = document.createElement("td");
     label2.textContent = "Block " + blocks[1 - !has_preblock];
     label2.className = "right_column";
+    label2.id = "period1_label";
     label2.colSpan = 2;
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
@@ -313,6 +317,7 @@ function makeGoldScheduleTable(blocks_input) {
     let time3 = document.createElement("td");
     time3.textContent = "10:40–11:20";
     time3.className = "left_column";
+    time3.id = "founders_period_time";
     time3.setAttribute("style", "vertical-align: top;");
     time3.colSpan = 2;
     row3.appendChild(time3);
@@ -321,6 +326,7 @@ function makeGoldScheduleTable(blocks_input) {
     label3.appendChild(document.createElement("br"));
     label3.appendChild(document.createTextNode("Founders Period (F30)"));
     label3.className = "right_column";
+    label3.id = "founders_period_label";
     label3.colSpan = 2;
     // if (topic) {
     //     label3.appendChild(document.createElement("br"));
@@ -353,18 +359,22 @@ function makeGoldScheduleTable(blocks_input) {
     let lower_time1 = document.createElement("td");
     lower_time1.textContent = "11:20–11:50";
     lower_time1.className = "colored left_column";
+    lower_time1.id = "lower_lunch_time";
     row5.appendChild(lower_time1);
     let lower_label1 = document.createElement("td");
     lower_label1.textContent = "Lunch";
     lower_label1.className = "colored left_midcolumn";
+    lower_label1.id = "lower_lunch_label";
     row5.appendChild(lower_label1);
     let upper_time1 = document.createElement("td");
     upper_time1.textContent = "11:30–12:40";
     upper_time1.className = "right_midcolumn";
+    upper_time1.id = "upper_period2_time";
     row5.appendChild(upper_time1);
     let upper_label1 = document.createElement("td");
     upper_label1.textContent = "Block " + blocks[3 - !has_preblock];
     upper_label1.className = "right_column";
+    upper_label1.id = "upper_period2_label";
     row5.appendChild(upper_label1);
     schedule_table.appendChild(row5);
 
@@ -372,18 +382,22 @@ function makeGoldScheduleTable(blocks_input) {
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "12:00–1:10";
     lower_time2.className = "left_column";
+    lower_time2.id = "lower_period2_time";
     row6.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[3 - !has_preblock];
     lower_label2.className = "left_midcolumn";
+    lower_label2.id = "lower_period2_label";
     row6.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "12:40–1:10";
     upper_time2.className = "colored right_midcolumn";
+    upper_time2.id = "upper_lunch_time";
     row6.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
     upper_label2.className = "colored right_column";
+    upper_label2.id = "upper_lunch_label";
     row6.appendChild(upper_label2);
     schedule_table.appendChild(row6);
 
@@ -395,11 +409,13 @@ function makeGoldScheduleTable(blocks_input) {
     let time4 = document.createElement("td");
     time4.textContent = "1:20–2:30";
     time4.className = "left_column";
+    time4.id = "period3_time";
     time4.colSpan = 2;
     row7.appendChild(time4);
     let label4 = document.createElement("td");
     label4.textContent = "Block " + blocks[4 - !has_preblock];
     label4.className = "right_column";
+    label4.id = "period3_label";
     label4.colSpan = 2;
     row7.appendChild(label4);
     schedule_table.appendChild(row7);
@@ -870,7 +886,6 @@ function updateBlueGreenSchedule(blocks_input) {
                 clearInterval(update_interval);
                 return;
             }
-            console.log("Checking if we are near the end of the passing period");
             // If we are near the end of the passing period, update more frequently (every 30 seconds)
             if (keys.reduce((minimum, current) => {
                 let diff = Math.abs(getTimeDiff(schedule_times[current]));

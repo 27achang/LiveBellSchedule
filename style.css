@@ -73,7 +73,6 @@ body {
     font-family: 'Calluna Sans', 'Helvetica';
     font-weight: 600;
     margin: 0px;
-    overflow: hidden;
     background-color: var(--background);
 }
 
@@ -82,7 +81,7 @@ body {
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-around;
-    padding: 8px 20px 10px 20px;
+    padding: 12px 20px 14px 20px;
     background-color: var(--primary);
     color: var(--text);
 }
@@ -96,7 +95,7 @@ body {
 #main {
     display: flex;
     justify-content: center;
-    height: calc(100vh - 2em - 18px);
+    height: calc(100vh - 2.5em - 26px - 8px);
 }
 
 table {
@@ -115,6 +114,7 @@ td {
     font-size: var(--table-font-size);
     padding: 0.1em 0.2em 0.2em 0.2em;
     box-sizing: inherit;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 td.active {
