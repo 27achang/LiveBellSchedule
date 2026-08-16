@@ -3,9 +3,9 @@ var SCHEDULE_TYPES, today, schedule, schedule_times, override_date, override_sch
 const blue_green_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:55', lower_lunch_start: '10:55', lower_lunch_end: '11:40', lower_period2_start: '11:50', lower_period2_end: '13:05', upper_period2_start: '11:05', upper_period2_end: '12:20', upper_lunch_start: '12:20', upper_lunch_end: '13:05', period3_start: '13:15', period3_end: '14:30'};
 const gold_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:40', founders_period_start: '10:40', founders_period_end: '11:20', lower_lunch_start: '11:20', lower_lunch_end: '11:50', lower_period2_start: '12:00', lower_period2_end: '13:10', upper_period2_start: '11:30', upper_period2_end: '12:40', upper_lunch_start: '12:40', upper_lunch_end: '13:10', period3_start: '13:20', period3_end: '14:30'};
 const mass_schedule = {period1_start: '09:00', period1_end: '09:55', mass_start: '10:05', mass_end: '11:35', lunch_start: '11:35', lunch_end: '12:20', period2_start: '12:30', period2_end: '13:25', period3_start: '13:25', period3_end: '14:30'};
-const founders_am_schedule = {period1_start: '09:30', period1_end: '10:35', founders_period_start: '10:45', founders_period_end: '11:55', lunch_start: '11:55', lunch_end: '12:30', period2_start: '12:40', period2_end: '13:45', period3_start: '13:55', period3_end: '15:00'};
-const founders_pm_schedule = {period1_start: '09:30', period1_end: '10:35', lower_lunch_start: '10:35', lower_lunch_end: '11:20', lower_period2_start: '11:30', lower_period2_end: '12:35', upper_period2_start: '10:45', upper_period2_end: '11:50', upper_lunch_start: '11:50', upper_lunch_end: '12:35', period3_start: '12:45', period3_end: '13:50', founders_period_start: '14:00', founders_period_end: '15:00'};
-const full_schedule = {period1_start: '09:30', period1_end: '10:10', period2_start: '10:20', period2_end: '11:00', period3_start: '11:10', period3_end: '11:50', lower_lunch_start: '12:00', lower_lunch_end: '12:30', lower_period4_start: '12:40', lower_period4_end: '13:20', upper_period4_start: '12:00', upper_period4_end: '12:40', upper_lunch_start: '12:50', upper_lunch_end: '13:20', period5_start: '13:30', period5_end: '14:10', period6_start: '14:20', period6_end: '15:00'};
+const founders_am_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:35', founders_period_start: '10:45', founders_period_end: '11:55', lunch_start: '11:55', lunch_end: '12:30', period2_start: '12:40', period2_end: '13:45', period3_start: '13:55', period3_end: '15:00'};
+const founders_pm_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:35', lower_lunch_start: '10:35', lower_lunch_end: '11:20', lower_period2_start: '11:30', lower_period2_end: '12:35', upper_period2_start: '10:45', upper_period2_end: '11:50', upper_lunch_start: '11:50', upper_lunch_end: '12:35', period3_start: '12:45', period3_end: '13:50', founders_period_start: '14:00', founders_period_end: '15:00'};
+const full_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:10', period2_start: '10:20', period2_end: '11:00', period3_start: '11:10', period3_end: '11:50', lower_lunch_start: '12:00', lower_lunch_end: '12:30', lower_period4_start: '12:40', lower_period4_end: '13:20', upper_period4_start: '12:00', upper_period4_end: '12:40', upper_lunch_start: '12:50', upper_lunch_end: '13:20', period5_start: '13:30', period5_end: '14:10', period6_start: '14:20', period6_end: '15:00'};
 
 // DOM Objects
 const header = document.getElementById("header");
@@ -90,7 +90,6 @@ function onNewDay() {
         case "Green":
             makeBlueGreenScheduleTable(schedule, blocks);
             schedule_times = blue_green_schedule;
-            updateBlueGreenSchedule(blocks);
             break;
         case "Gold":
             makeGoldScheduleTable(blocks);
@@ -112,6 +111,7 @@ function onNewDay() {
             makeFullScheduleTable(blocks);
             schedule_times = full_schedule;
     }
+    updateSchedule(blocks);
 
     if (override_date === undefined) check_for_new_day_interval = setInterval(checkForNewDay, 60 * 60 * 1000);
 }
@@ -431,10 +431,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
         let time = document.createElement("td");
         time.textContent = "8:00–9:15";
         time.className = "left_column";
+        time.id = "preblock_time";
         row.appendChild(time);
         let label = document.createElement("td");
         label.textContent = "Block " + blocks[0];
         label.className = "right_column";
+        label.id = "preblock_label";
         if (pe_health) {
             label.textContent += " ";
             let span = document.createElement("span");
@@ -450,10 +452,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
     let time1 = document.createElement("td");
     time1.textContent = "9:30–10:35";
     time1.className = "left_column";
+    time1.id = "period1_time";
     row1.appendChild(time1);
     let label1 = document.createElement("td");
     label1.textContent = "Block " + blocks[0 + has_preblock];
     label1.className = "right_column";
+    label1.id = "period1_label";
     row1.appendChild(label1);
     schedule_table.appendChild(row1);
     
@@ -461,10 +465,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
     let time2 = document.createElement("td");
     time2.textContent = "10:45–11:55";
     time2.className = "left_column";
+    time2.id = "founders_period_time";
     row2.appendChild(time2);
     let label2 = document.createElement("td");
     label2.textContent = "Founders Period (F70)";
     label2.className = "right_column";
+    label2.id = "founders_period_label";
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
     
@@ -472,10 +478,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
     let time3 = document.createElement("td");
     time3.textContent = "11:55–12:30";
     time3.className = "colored left_column";
+    time3.id = "lunch_time";
     row3.appendChild(time3);
     let label3 = document.createElement("td");
     label3.textContent = "All-School Lunch";
     label3.className = "colored right_column";
+    label3.id = "lunch_label";
     row3.appendChild(label3);
     schedule_table.appendChild(row3);
     
@@ -483,10 +491,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
     let time4 = document.createElement("td");
     time4.textContent = "12:40–1:45";
     time4.className = "left_column";
+    time4.id = "period2_time";
     row4.appendChild(time4);
     let label4 = document.createElement("td");
     label4.textContent = "Block " + blocks[2 + has_preblock];
     label4.className = "right_column";
+    label4.id = "period2_label";
     row4.appendChild(label4);
     schedule_table.appendChild(row4);
     
@@ -494,10 +504,12 @@ function makeFoundersAMScheduleTable(blocks_input) {
     let time5 = document.createElement("td");
     time5.textContent = "1:55–3:00";
     time5.className = "left_column";
+    time5.id = "period3_time";
     row5.appendChild(time5);
     let label5 = document.createElement("td");
     label5.textContent = "Block " + blocks[3 + has_preblock];
     label5.className = "right_column";
+    label5.id = "period3_label";
     row5.appendChild(label5);
     schedule_table.appendChild(row5);
 }
@@ -512,11 +524,13 @@ function makeFoundersPMScheduleTable(blocks_input) {
         let time1 = document.createElement("td");
         time1.textContent = "8:00–9:15";
         time1.className = "left_column";
+        time1.id = "preblock_time";
         time1.colSpan = 2;
         row1.appendChild(time1);
         let label1 = document.createElement("td");
         label1.textContent = "Block " + blocks[0];
         label1.className = "right_column";
+        label1.id = "preblock_label";
         label1.colSpan = 2;
         if (pe_health) {
             label1.textContent += " ";
@@ -533,11 +547,13 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let time2 = document.createElement("td");
     time2.textContent = "9:30–10:35";
     time2.className = "left_column";
+    time2.id = "period1_time";
     time2.colSpan = 2;
     row2.appendChild(time2);
     let label2 = document.createElement("td");
     label2.textContent = "Block " + blocks[0 + has_preblock];
     label2.className = "right_column";
+    label2.id = "period1_label";
     label2.colSpan = 2;
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
@@ -563,18 +579,22 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let lower_time1 = document.createElement("td");
     lower_time1.textContent = "10:35–11:20";
     lower_time1.className = "colored left_column";
+    lower_time1.id = "lower_lunch_time";
     row4.appendChild(lower_time1);
     let lower_label1 = document.createElement("td");
     lower_label1.textContent = "Lunch";
     lower_label1.className = "colored left_midcolumn";
+    lower_label1.id = "lower_lunch_label";
     row4.appendChild(lower_label1);
     let upper_time1 = document.createElement("td");
     upper_time1.textContent = "10:45–11:50";
     upper_time1.className = "right_midcolumn";
+    upper_time1.id = "upper_period2_time";
     row4.appendChild(upper_time1);
     let upper_label1 = document.createElement("td");
     upper_label1.textContent = "Block " + blocks[1 + has_preblock];
     upper_label1.className = "right_column";
+    upper_label1.id = "upper_period2_label";
     row4.appendChild(upper_label1);
     schedule_table.appendChild(row4);
 
@@ -582,18 +602,22 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "11:30–12:35";
     lower_time2.className = "left_column";
+    lower_time2.id = "lower_period2_time";
     row5.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[1 + has_preblock];
     lower_label2.className = "left_midcolumn";
+    lower_label2.id = "lower_period2_label";
     row5.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "11:50–12:35";
     upper_time2.className = "colored right_midcolumn";
+    upper_time2.id = "upper_lunch_time";
     row5.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
     upper_label2.className = "colored right_column";
+    upper_label2.id = "upper_lunch_label";
     row5.appendChild(upper_label2);
     schedule_table.appendChild(row5);
 
@@ -605,11 +629,13 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let time3 = document.createElement("td");
     time3.textContent = "12:45–1:50";
     time3.className = "left_column";
+    time3.id = "period3_time";
     time3.colSpan = 2;
     row6.appendChild(time3);
     let label3 = document.createElement("td");
     label3.textContent = "Block " + blocks[2 + has_preblock];
     label3.className = "right_column";
+    label3.id = "period3_label";
     label3.colSpan = 2;
     row6.appendChild(label3);
     schedule_table.appendChild(row6);
@@ -618,11 +644,13 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let time4 = document.createElement("td");
     time4.textContent = "2:00–3:00";
     time4.className = "left_column";
+    time4.id = "founders_period_time";
     time4.colSpan = 2;
     row7.appendChild(time4);
     let label4 = document.createElement("td");
     label4.textContent = "Founders Period (F60)";
     label4.className = "right_column";
+    label4.id = "founders_period_label";
     label4.colSpan = 2;
     row7.appendChild(label4);
     schedule_table.appendChild(row7);
@@ -643,11 +671,13 @@ function makeMassScheduleTable(blocks_input) {
     let time1 = document.createElement("td");
     time1.textContent = "9:00–9:55";
     time1.className = "left_column";
+    time1.id = "period1_time";
     time1.setAttribute("style", "font-weight: bold;");
     row1.appendChild(time1);
     let label1 = document.createElement("td");
     label1.textContent = "Block " + blocks[0];
     label1.className = "right_column";
+    label1.id = "period1_label";
     label1.setAttribute("style", "font-weight: bold;");
     row1.appendChild(label1);
     schedule_table.appendChild(row1);
@@ -656,10 +686,12 @@ function makeMassScheduleTable(blocks_input) {
     let time2 = document.createElement("td");
     time2.textContent = "10:05–11:35";
     time2.className = "left_column";
+    time2.id = "mass_time";
     row2.appendChild(time2);    
     let label2 = document.createElement("td");
     label2.textContent = "Mass";
     label2.className = "right_column";
+    label2.id = "mass_label";
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
     
@@ -667,10 +699,12 @@ function makeMassScheduleTable(blocks_input) {
     let time3 = document.createElement("td");
     time3.textContent = "11:35–12:20";
     time3.className = "colored left_column";
+    time3.id = "lunch_time";
     row3.appendChild(time3);
     let label3 = document.createElement("td");
     label3.textContent = "All-School Lunch";
     label3.className = "colored right_column";
+    label3.id = "lunch_label";
     row3.appendChild(label3);
     schedule_table.appendChild(row3);
     
@@ -678,10 +712,12 @@ function makeMassScheduleTable(blocks_input) {
     let time4 = document.createElement("td");
     time4.textContent = "12:30–1:25";
     time4.className = "left_column";
+    time4.id = "period2_time";
     row4.appendChild(time4);
     let label4 = document.createElement("td");
     label4.textContent = "Block " + blocks[2];
     label4.className = "right_column";
+    label4.id = "period2_label";
     row4.appendChild(label4);
     schedule_table.appendChild(row4);
     
@@ -689,10 +725,12 @@ function makeMassScheduleTable(blocks_input) {
     let time5 = document.createElement("td");
     time5.textContent = "1:35–2:30";
     time5.className = "left_column";
+    time5.id = "period3_time";
     row5.appendChild(time5);
     let label5 = document.createElement("td");
     label5.textContent = "Block " + blocks[3];
     label5.className = "right_column";
+    label5.id = "period3_label";
     row5.appendChild(label5);
     schedule_table.appendChild(row5);
 }
@@ -709,11 +747,13 @@ function makeFullScheduleTable(blocks_input) {
         let time = document.createElement("td");
         time.textContent = "8:00–9:15";
         time.className = "left_column";
+        time.id = "preblock_time";
         time.colSpan = 2;
         row.appendChild(time);
         let label = document.createElement("td");
         label.textContent = "Block " + blocks[0];
         label.className = "right_column";
+        label.id = "preblock_label";
         label.colSpan = 2;
         if (pe_health) {
             label.textContent += " ";
@@ -729,11 +769,13 @@ function makeFullScheduleTable(blocks_input) {
     let time1 = document.createElement("td");
     time1.textContent = "9:30–10:10";
     time1.className = "left_column";
+    time1.id = "period1_time";
     time1.colSpan = 2;
     row1.appendChild(time1);
     let label1 = document.createElement("td");
     label1.textContent = "Block " + blocks[0 + has_preblock];
     label1.className = "right_column";
+    label1.id = "period1_label";
     label1.colSpan = 2;
     row1.appendChild(label1);
     schedule_table.appendChild(row1);
@@ -742,11 +784,13 @@ function makeFullScheduleTable(blocks_input) {
     let time2 = document.createElement("td");
     time2.textContent = "10:20–11:00";
     time2.className = "left_column";
+    time2.id = "period2_time";
     time2.colSpan = 2;
     row2.appendChild(time2);
     let label2 = document.createElement("td");
     label2.textContent = "Block " + blocks[1 + has_preblock];
     label2.className = "right_column";
+    label2.id = "period2_label";
     label2.colSpan = 2;
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
@@ -755,11 +799,13 @@ function makeFullScheduleTable(blocks_input) {
     let time3 = document.createElement("td");
     time3.textContent = "11:10–11:50";
     time3.className = "left_column";
+    time3.id = "period3_time";
     time3.colSpan = 2;
     row3.appendChild(time3);
     let label3 = document.createElement("td");
     label3.textContent = "Block " + blocks[2 + has_preblock];
     label3.className = "right_column";
+    label3.id = "period3_label";
     label3.colSpan = 2;
     row3.appendChild(label3);
     schedule_table.appendChild(row3);
@@ -785,18 +831,22 @@ function makeFullScheduleTable(blocks_input) {
     let lower_time1 = document.createElement("td");
     lower_time1.textContent = "12:00–12:30";
     lower_time1.className = "left_column";
+    lower_time1.id = "lower_lunch_time";
     row5.appendChild(lower_time1);
     let lower_label1 = document.createElement("td");
     lower_label1.textContent = "Lunch";
     lower_label1.className = "left_midcolumn";
+    lower_label1.id = "lower_lunch_label";
     row5.appendChild(lower_label1);
     let upper_time1 = document.createElement("td");
     upper_time1.textContent = "12:00–12:40";
     upper_time1.className = "right_midcolumn";
+    upper_time1.id = "upper_period4_time";
     row5.appendChild(upper_time1);
     let upper_label1 = document.createElement("td");
     upper_label1.textContent = "Block " + blocks[3 + has_preblock];
     upper_label1.className = "right_column";
+    upper_label1.id = "upper_period4_label";
     row5.appendChild(upper_label1);
     schedule_table.appendChild(row5);
 
@@ -804,18 +854,22 @@ function makeFullScheduleTable(blocks_input) {
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "12:40–1:20";
     lower_time2.className = "left_column";
+    lower_time2.id = "lower_period4_time";
     row6.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[3 + has_preblock];
     lower_label2.className = "left_midcolumn";
+    lower_label2.id = "lower_period4_label";
     row6.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "12:50–1:20";
     upper_time2.className = "right_midcolumn";
+    upper_time2.id = "upper_lunch_time";
     row6.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
     upper_label2.className = "right_column";
+    upper_label2.id = "upper_lunch_label";
     row6.appendChild(upper_label2);
     schedule_table.appendChild(row6);
 
@@ -827,11 +881,13 @@ function makeFullScheduleTable(blocks_input) {
     let time4 = document.createElement("td");
     time4.textContent = "1:30–2:10";
     time4.className = "left_column";
+    time4.id = "period5_time";
     time4.colSpan = 2;
     row7.appendChild(time4);
     let label4 = document.createElement("td");
     label4.textContent = "Block " + blocks[4 + has_preblock];
     label4.className = "right_column";
+    label4.id = "period5_label";
     label4.colSpan = 2;
     row7.appendChild(label4);
     schedule_table.appendChild(row7);
@@ -840,20 +896,23 @@ function makeFullScheduleTable(blocks_input) {
     let time5 = document.createElement("td");
     time5.textContent = "2:20–3:00";
     time5.className = "left_column";
+    time5.id = "period6_time";
     time5.colSpan = 2;
     row8.appendChild(time5);
     let label5 = document.createElement("td");
     label5.textContent = "Block " + blocks[5 + has_preblock];
     label5.className = "right_column";
+    label5.id = "period6_label";
     label5.colSpan = 2;
     row8.appendChild(label5);
     schedule_table.appendChild(row8);
 }
 
-function updateBlueGreenSchedule(blocks_input) {
+function updateSchedule(blocks_input) {
     // If there is no previously recorded period or the period has since changed, determine the new period
-    let period_unchanged = timeIsBeforePresent(schedule_times[current_periods + "_end"]);
-    if (current_periods === undefined || current_periods.length == 0 || period_unchanged) {
+    // TODO - period_unchanged is not viable for changing upper & lower lunch timings
+    // let period_unchanged = timeIsBeforePresent(schedule_times[current_periods + "_end"]);
+    // if (current_periods === undefined || current_periods.length == 0 || period_unchanged) {
         current_periods = [];
         let keys = Object.keys(schedule_times);
         for (let i = 0; i < keys.length; i += 2) {
@@ -887,7 +946,7 @@ function updateBlueGreenSchedule(blocks_input) {
                 return;
             }
             // If we are near the end of the passing period, update more frequently (every 30 seconds)
-            if (keys.reduce((minimum, current) => {
+            /*if (keys.reduce((minimum, current) => {
                 let diff = Math.abs(getTimeDiff(schedule_times[current]));
                 return (diff < minimum ? diff : minimum);
             }, getTimeDiff(Object.values(schedule_times)[0])) < 60 * 1000) {
@@ -895,22 +954,22 @@ function updateBlueGreenSchedule(blocks_input) {
                 if (update_frequency == 10) return;
                 clearInterval(update_interval);
                 update_frequency = 10;
-                update_interval = setInterval(updateBlueGreenSchedule, 10 * 1000);
+                update_interval = setInterval(updateSchedule, 10 * 1000);
             } else {
                 // If we are already on a 60-second update interval, keep it. Otherwise, make one
                 if (update_frequency == 60) return;
                 clearInterval(update_interval);
                 update_frequency = 60;
-                update_interval = setInterval(updateBlueGreenSchedule, 60 * 1000);
+                update_interval = setInterval(updateSchedule, 60 * 1000);
             }
-            return;
+            return;*/
         }
         // Set cells as active
         current_periods.forEach((period) => {
             document.getElementById(period + "_time").classList.add("active");
             document.getElementById(period + "_label").classList.add("active");
         });
-    }
+    // }
 
     // Once cells have the active tag, update the width of the progress bar
     /*for (let i = 0; i < current_periods.length; i++) {
@@ -939,8 +998,15 @@ function updateBlueGreenSchedule(blocks_input) {
         }
     }*/
 
+    clearInterval(update_interval);
+    let ms_to_next_update = Object.values(schedule_times).reduce((minimum, current) => {
+        let diff = 0 - getTimeDiff(current);
+        return (diff > 0 && diff < minimum ? diff : minimum);
+    }, getTimeDiff(Object.values(schedule_times)[0]));
+    update_interval = setInterval(updateSchedule, ms_to_next_update + 100);
+
    // If we are in a passing period or we are near the beginning of a block, update more frequently (every 10 seconds)
-   if (current_periods.reduce((minimum, period) => {
+   /*if (current_periods.reduce((minimum, period) => {
        let diff = Math.abs(getTimeDiff(schedule_times[period + "_end"]));
        return (diff < minimum ? diff : minimum);
     }, getTimeDiff(Object.values(schedule_times)[0])) < 30 * 1000) {
@@ -948,7 +1014,7 @@ function updateBlueGreenSchedule(blocks_input) {
         if (update_frequency == 10) return;
         clearInterval(update_interval); // Will not error if update_frequency is undefined (ie. setting updateInterval for first time)
         update_frequency = 10;
-        update_interval = setInterval(updateBlueGreenSchedule, 10 * 1000);
+        update_interval = setInterval(updateSchedule, 10 * 1000);
     }
     // If we are near the end of a period, update less frequently (every 30 seconds)
     else {
@@ -956,8 +1022,8 @@ function updateBlueGreenSchedule(blocks_input) {
         if (update_frequency == 30) return;
         clearInterval(update_interval);
         update_frequency = 30;
-        update_interval = setInterval(updateBlueGreenSchedule, 30 * 1000);
-    }
+        update_interval = setInterval(updateSchedule, 30 * 1000);
+    }*/
 }
 
 /**
