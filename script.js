@@ -1,4 +1,4 @@
-var SCHEDULE_TYPES, today, schedule, schedule_times, override_date, override_schedule, has_preblock, current_periods, update_interval, check_for_new_day_interval;
+var SCHEDULE_TYPES, today, schedule, schedule_times, override_date, override_schedule, override_time, initialization_time, has_preblock, current_periods, update_interval, update_frequency, check_for_new_day_interval;
 
 const blue_green_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:55', lower_lunch_start: '10:55', lower_lunch_end: '11:40', lower_period2_start: '11:50', lower_period2_end: '13:05', upper_period2_start: '11:05', upper_period2_end: '12:20', upper_lunch_start: '12:20', upper_lunch_end: '13:05', period3_start: '13:15', period3_end: '14:30'};
 const gold_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:40', founders_period_start: '10:40', founders_period_end: '11:20', lower_lunch_start: '11:20', lower_lunch_end: '11:50', lower_period2_start: '12:00', lower_period2_end: '13:10', upper_period2_start: '11:30', upper_period2_end: '12:40', upper_lunch_start: '12:40', upper_lunch_end: '13:10', period3_start: '13:20', period3_end: '14:30'};
@@ -18,7 +18,7 @@ function onNewDay() {
     today = new Date();
 
     // Update the displayed date
-    date_display.textContent = new Intl.DateTimeFormat("en-US", {weekday: "long", year: "numeric", month: "long", day: "numeric"}).format((override_date ? new Date(override_date) : today));
+    date_display.textContent = new Intl.DateTimeFormat("en-US", {weekday: "long", month: "long", day: "numeric"}).format((override_date ? new Date(override_date) : today));
 
     // Update the displayed schedule type and set the background color of the main section
     let schedule_type;
@@ -31,10 +31,23 @@ function onNewDay() {
         header.style.backgroundColor = "white";
         return;
     }
-    schedule_type_display.textContent = schedule_type.split(" (")[0].split(" [")[0].split(": ").join(" "); // Remove colon for displayed schedule type
-    if (schedule_type_display.style.display == "none") schedule_type_display.style.display = "inline-block";
 
     schedule = schedule_type.split(": ")[0];
+    switch (schedule) {
+        case "F-AM":
+            schedule_type_display.textContent = "Founders AM " + schedule_type.split(" (")[0].split(" [")[0].split(": ")[1];
+            break;
+        case "F-PM":
+            schedule_type_display.textContent = "Founders PM " + schedule_type.split(" (")[0].split(" [")[0].split(": ")[1];
+            break;
+        case "Mass":
+            schedule_type_display.textContent = schedule_type.split(" (")[0].split(" [")[0].split(": ")[1];
+            break;
+        default:
+            schedule_type_display.textContent = schedule_type.split(" (")[0].split(" [")[0].split(": ").join(" "); // Remove colon for displayed schedule type
+    }
+    if (schedule_type_display.style.display == "none") schedule_type_display.style.display = "inline-block";
+
     let blocks = schedule_type.split(": ")[1]; // Includes " (PE/Health)" postfix indicator
 
     // Set the background color
@@ -82,6 +95,7 @@ function onNewDay() {
         case "Gold":
             makeGoldScheduleTable(blocks);
             schedule_times = gold_schedule;
+            updateBlueGreenSchedule(blocks);
             break;
         case "F-AM":
             makeFoundersAMScheduleTable(blocks);
@@ -100,7 +114,7 @@ function onNewDay() {
             schedule_times = full_schedule;
     }
 
-    check_for_new_day_interval = setInterval(checkForNewDay, 60 * 60 * 1000);
+    if (override_date === undefined) check_for_new_day_interval = setInterval(checkForNewDay, 60 * 60 * 1000);
 }
 
 function checkForNewDay() {
@@ -162,6 +176,10 @@ function makeBlueGreenScheduleTable(schedule, blocks_input) {
     label2.appendChild(announcements_span);
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
+
+    let spacer_row1 = document.createElement("tr");
+    spacer_row1.className = "spacer";
+    schedule_table.appendChild(spacer_row1);
     
     let row3 = document.createElement("tr");
     let lower_header = document.createElement("td");
@@ -202,25 +220,29 @@ function makeBlueGreenScheduleTable(schedule, blocks_input) {
     let row5 = document.createElement("tr");
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "11:50–1:05";
-    lower_time2.className = "left_column last_row_of_subcolumns";
+    lower_time2.className = "left_column";
     lower_time2.id = "lower_period2_time";
     row5.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[2 - !has_preblock];
-    lower_label2.className = "left_midcolumn last_row_of_subcolumns";
+    lower_label2.className = "left_midcolumn";
     lower_label2.id = "lower_period2_label";
     row5.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "12:20–1:05";
-    upper_time2.className = "colored right_midcolumn last_row_of_subcolumns";
+    upper_time2.className = "colored right_midcolumn";
     upper_time2.id = "upper_lunch_time";
     row5.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
-    upper_label2.className = "colored right_column last_row_of_subcolumns";
+    upper_label2.className = "colored right_column";
     upper_label2.id = "upper_lunch_label";
     row5.appendChild(upper_label2);
     schedule_table.appendChild(row5);
+
+    let spacer_row2 = document.createElement("tr");
+    spacer_row2.className = "spacer";
+    schedule_table.appendChild(spacer_row2);
     
     let row6 = document.createElement("tr");
     let time4 = document.createElement("td");
@@ -310,6 +332,10 @@ function makeGoldScheduleTable(blocks_input) {
     // }
     row3.appendChild(label3);
     schedule_table.appendChild(row3);
+
+    let spacer_row1 = document.createElement("tr");
+    spacer_row1.className = "spacer";
+    schedule_table.appendChild(spacer_row1);
     
     let row4 = document.createElement("tr");
     let lower_header = document.createElement("td");
@@ -346,21 +372,25 @@ function makeGoldScheduleTable(blocks_input) {
     let row6 = document.createElement("tr");
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "12:00–1:10";
-    lower_time2.className = "left_column last_row_of_subcolumns";
+    lower_time2.className = "left_column";
     row6.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[3 - !has_preblock];
-    lower_label2.className = "left_midcolumn last_row_of_subcolumns";
+    lower_label2.className = "left_midcolumn";
     row6.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "12:40–1:10";
-    upper_time2.className = "colored right_midcolumn last_row_of_subcolumns";
+    upper_time2.className = "colored right_midcolumn";
     row6.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
-    upper_label2.className = "colored right_column last_row_of_subcolumns";
+    upper_label2.className = "colored right_column";
     row6.appendChild(upper_label2);
     schedule_table.appendChild(row6);
+
+    let spacer_row2 = document.createElement("tr");
+    spacer_row2.className = "spacer";
+    schedule_table.appendChild(spacer_row2);
     
     let row7 = document.createElement("tr");
     let time4 = document.createElement("td");
@@ -496,6 +526,10 @@ function makeFoundersPMScheduleTable(blocks_input) {
     label2.colSpan = 2;
     row2.appendChild(label2);
     schedule_table.appendChild(row2);
+
+    let spacer_row1 = document.createElement("tr");
+    spacer_row1.className = "spacer";
+    schedule_table.appendChild(spacer_row1);
     
     let row3 = document.createElement("tr");
     let lower_header = document.createElement("td");
@@ -532,21 +566,25 @@ function makeFoundersPMScheduleTable(blocks_input) {
     let row5 = document.createElement("tr");
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "11:30–12:35";
-    lower_time2.className = "left_column last_row_of_subcolumns";
+    lower_time2.className = "left_column";
     row5.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[1 + has_preblock];
-    lower_label2.className = "left_midcolumn last_row_of_subcolumns";
+    lower_label2.className = "left_midcolumn";
     row5.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "11:50–12:35";
-    upper_time2.className = "colored right_midcolumn last_row_of_subcolumns";
+    upper_time2.className = "colored right_midcolumn";
     row5.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
-    upper_label2.className = "colored right_column last_row_of_subcolumns";
+    upper_label2.className = "colored right_column";
     row5.appendChild(upper_label2);
     schedule_table.appendChild(row5);
+
+    let spacer_row2 = document.createElement("tr");
+    spacer_row2.className = "spacer";
+    schedule_table.appendChild(spacer_row2);
     
     let row6 = document.createElement("tr");
     let time3 = document.createElement("td");
@@ -710,6 +748,10 @@ function makeFullScheduleTable(blocks_input) {
     label3.colSpan = 2;
     row3.appendChild(label3);
     schedule_table.appendChild(row3);
+
+    let spacer_row1 = document.createElement("tr");
+    spacer_row1.className = "spacer";
+    schedule_table.appendChild(spacer_row1);
     
     let row4 = document.createElement("tr");
     let lower_header = document.createElement("td");
@@ -746,21 +788,25 @@ function makeFullScheduleTable(blocks_input) {
     let row6 = document.createElement("tr");
     let lower_time2 = document.createElement("td");
     lower_time2.textContent = "12:40–1:20";
-    lower_time2.className = "left_column last_row_of_subcolumns";
+    lower_time2.className = "left_column";
     row6.appendChild(lower_time2);
     let lower_label2 = document.createElement("td");
     lower_label2.textContent = "Block " + blocks[3 + has_preblock];
-    lower_label2.className = "left_midcolumn last_row_of_subcolumns";
+    lower_label2.className = "left_midcolumn";
     row6.appendChild(lower_label2);
     let upper_time2 = document.createElement("td");
     upper_time2.textContent = "12:50–1:20";
-    upper_time2.className = "right_midcolumn last_row_of_subcolumns";
+    upper_time2.className = "right_midcolumn";
     row6.appendChild(upper_time2);
     let upper_label2 = document.createElement("td");
     upper_label2.textContent = "Lunch";
-    upper_label2.className = "right_column last_row_of_subcolumns";
+    upper_label2.className = "right_column";
     row6.appendChild(upper_label2);
     schedule_table.appendChild(row6);
+
+    let spacer_row2 = document.createElement("tr");
+    spacer_row2.className = "spacer";
+    schedule_table.appendChild(spacer_row2);
     
     let row7 = document.createElement("tr");
     let time4 = document.createElement("td");
@@ -792,7 +838,7 @@ function makeFullScheduleTable(blocks_input) {
 function updateBlueGreenSchedule(blocks_input) {
     // If there is no previously recorded period or the period has since changed, determine the new period
     let period_unchanged = timeIsBeforePresent(schedule_times[current_periods + "_end"]);
-    if (!current_periods || period_unchanged) {
+    if (current_periods === undefined || current_periods.length == 0 || period_unchanged) {
         current_periods = [];
         let keys = Object.keys(schedule_times);
         for (let i = 0; i < keys.length; i += 2) {
@@ -817,10 +863,32 @@ function updateBlueGreenSchedule(blocks_input) {
         // document.body.style.setProperty("section3-bar-width", "0px");
         // document.body.style.setProperty("section4-bar-width", "0px");
 
-        // If we are only in a passing period (no upper or lower period), termination execution early (TODO - consider adding visual for passing periods)
-        if (current_periods.length == 0){
-            clearInterval(update_interval);
-            update_interval = setInterval(updateBlueGreenSchedule, (10 * 60 * 1000 + 10 * 1000));
+        // If we are only in a passing period (no upper or lower period), extend the delay on the interval and terminate execution early (TODO - consider adding visual for passing periods)
+        if (current_periods.length == 0) {
+            let keys = Object.keys(schedule_times);
+            // If we are after the school day, clear the interval and terminate execution early
+            if (timeIsBeforePresent(schedule_times[keys[keys.length - 1]])) {
+                clearInterval(update_interval);
+                return;
+            }
+            console.log("Checking if we are near the end of the passing period");
+            // If we are near the end of the passing period, update more frequently (every 30 seconds)
+            if (keys.reduce((minimum, current) => {
+                let diff = Math.abs(getTimeDiff(schedule_times[current]));
+                return (diff < minimum ? diff : minimum);
+            }, getTimeDiff(Object.values(schedule_times)[0])) < 60 * 1000) {
+                // If we are already on a 10-second update interval, keep it. Otherwise, make one
+                if (update_frequency == 10) return;
+                clearInterval(update_interval);
+                update_frequency = 10;
+                update_interval = setInterval(updateBlueGreenSchedule, 10 * 1000);
+            } else {
+                // If we are already on a 60-second update interval, keep it. Otherwise, make one
+                if (update_frequency == 60) return;
+                clearInterval(update_interval);
+                update_frequency = 60;
+                update_interval = setInterval(updateBlueGreenSchedule, 60 * 1000);
+            }
             return;
         }
         // Set cells as active
@@ -857,7 +925,61 @@ function updateBlueGreenSchedule(blocks_input) {
         }
     }*/
 
-    update_interval = setInterval(updateBlueGreenSchedule, 10 * 1000);
+   // If we are in a passing period or we are near the beginning of a block, update more frequently (every 10 seconds)
+   if (current_periods.reduce((minimum, period) => {
+       let diff = Math.abs(getTimeDiff(schedule_times[period + "_end"]));
+       return (diff < minimum ? diff : minimum);
+    }, getTimeDiff(Object.values(schedule_times)[0])) < 30 * 1000) {
+        // If we are already on a 10 second interval, don't bother setting a new one
+        if (update_frequency == 10) return;
+        clearInterval(update_interval); // Will not error if update_frequency is undefined (ie. setting updateInterval for first time)
+        update_frequency = 10;
+        update_interval = setInterval(updateBlueGreenSchedule, 10 * 1000);
+    }
+    // If we are near the end of a period, update less frequently (every 30 seconds)
+    else {
+        // If we are already on a 10 second interval, don't bother setting a new one
+        if (update_frequency == 30) return;
+        clearInterval(update_interval);
+        update_frequency = 30;
+        update_interval = setInterval(updateBlueGreenSchedule, 30 * 1000);
+    }
+}
+
+function updateGoldSchedule(blocks_input) {
+    // If there is no previously recorded period or the period has since changed, determine the new period
+    let period_unchanged = timeIsBeforePresent(schedule_times[current_periods + "_end"]);
+    if (!current_periods || period_unchanged) {
+        current_periods = [];
+        let keys = Object.keys(schedule_times);
+        for (let i = 0; i < keys.length; i += 2) {
+            // If we are not after the start time of the iterated period, go the next period
+            if (timeIsAfterPresent(schedule_times[keys[i]])) continue;
+            // If we are not before the end time of the iterated period, go the next period
+            if (timeIsBeforePresent(schedule_times[keys[i + 1]])) continue;
+            // If we have passed the above two conditions, we are within period that has bounds specified by keys[i] and keys[i + 1]
+            current_periods.push(keys[i].substring(0, keys[i].lastIndexOf("_")));
+        }
+
+        // Reset table coloring
+        schedule_table.querySelectorAll("td.active").forEach((cell) => cell.classList.remove("active"));
+
+        // If we are only in a passing period (no upper or lower period), extend the delay on the interval and terminate execution early (TODO - consider adding visual for passing periods)
+        // If we are after the school day, clear the interval and terminate execution early
+        if (current_periods.length == 0) {
+            clearInterval(update_interval);
+            let keys = Object.keys(schedule_times);
+            if (timeIsAfterPresent(schedule_times[keys[keys.length - 1]])) update_interval = setInterval(updateBlueGreenSchedule, (10 * 60 * 1000 + 10 * 1000));
+            return;
+        }
+        // Set cells as active
+        current_periods.forEach((period) => {
+            document.getElementById(period + "_time").classList.add("active");
+            document.getElementById(period + "_label").classList.add("active");
+        });
+    }
+
+    update_interval = setInterval(updateBlueGreenSchedule, 30 * 1000);
 }
 
 /**
@@ -867,7 +989,8 @@ function updateBlueGreenSchedule(blocks_input) {
  * @returns {boolean} `true` if the provided time is before the current time, `false` otherwise
  */
 function timeIsBeforePresent(time) {
-    return new Date(new Intl.DateTimeFormat("en-US").format(new Date()) + " " + time).getTime() < Date.now();
+    if (override_time) return new Date(new Intl.DateTimeFormat("en-US").format(new Date()) + " " + time).getTime() < (new Date(new Intl.DateTimeFormat("en-US").format(new Date()) + " " + override_time).getTime() + Date.now() - initialization_time);
+    else return new Date(new Intl.DateTimeFormat("en-US").format(new Date()) + " " + time).getTime() < Date.now();
 }
 
 
@@ -894,10 +1017,13 @@ function timeIsAfterPresent(time) {
 function getTimeDiff(time1, time2) {
     let format = new Intl.DateTimeFormat("en-US");
     if (typeof time2 !== "undefined") return new Date(format.format(new Date()) + " " + time2).getTime() - new Date(format.format(new Date()) + " " + time1).getTime();
+    else if (override_time) return (new Date(format.format(new Date()) + " " + override_time).getTime() + Date.now() - initialization_time) - new Date(format.format(new Date()) + " " + time1).getTime();
     else return Date.now() - new Date(format.format(new Date()) + " " + time1).getTime();
 }
 
 window.onload = () => {
+    initialization_time = Date.now();
+
     // Overriden date and schedule formats must match as specified below
     let date_regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
     let schedule_regexes = [
@@ -909,6 +1035,7 @@ window.onload = () => {
         /^Mass: [1-6],Mass,[1-6],[1-6]$/,
         /^Full: (?:[78],)?[1-6],[1-6],[1-6],[1-6],[1-6],[1-6](?: \(PE\/Health\))?$/
     ];
+    let time_regex = /^[0-2]?\d:[0-5]\d/;
     const url_parameters = new URLSearchParams(window.location.search);
     if (url_parameters.has("date")) {
         let date_input = url_parameters.get("date");
@@ -917,6 +1044,10 @@ window.onload = () => {
     if (url_parameters.has("schedule")) {
         let schedule_input = url_parameters.get("schedule").toString();
         if (schedule_regexes.some(regexr => regexr.test(schedule_input))) override_schedule = schedule_input;
+    }
+    if (url_parameters.has("time")) {
+        let time_input = url_parameters.get("time");
+        if (time_regex.test(time_input) && new Date("1 January 1970 " + time_input).toString() != "Invalid Date") override_time = time_input;
     }
     
     SCHEDULE_TYPES = JSON.parse(SCHEDULE_TYPES_JSON);
