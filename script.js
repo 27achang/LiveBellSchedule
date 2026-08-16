@@ -1,4 +1,4 @@
-var SCHEDULE_TYPES, today, schedule, schedule_times, override_date, override_schedule, override_time, initialization_time, has_preblock, current_periods, update_interval, update_frequency, check_for_new_day_interval;
+var SCHEDULE_TYPES, today, schedule, schedule_times, override_date, override_schedule, override_time, initialization_time, has_preblock, current_periods, update_interval, update_frequency, check_for_new_day_interval, last_reload;
 
 const blue_green_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:55', lower_lunch_start: '10:55', lower_lunch_end: '11:40', lower_period2_start: '11:50', lower_period2_end: '13:05', upper_period2_start: '11:05', upper_period2_end: '12:20', upper_lunch_start: '12:20', upper_lunch_end: '13:05', period3_start: '13:15', period3_end: '14:30'};
 const gold_schedule = {preblock_start: '08:00', preblock_end: '09:15', period1_start: '09:30', period1_end: '10:40', founders_period_start: '10:40', founders_period_end: '11:20', lower_lunch_start: '11:20', lower_lunch_end: '11:50', lower_period2_start: '12:00', lower_period2_end: '13:10', upper_period2_start: '11:30', upper_period2_end: '12:40', upper_lunch_start: '12:40', upper_lunch_end: '13:10', period3_start: '13:20', period3_end: '14:30'};
@@ -16,6 +16,8 @@ const schedule_table = document.getElementById("schedule");
 // Update the displays in the header, load the table with the appropriate format for the day's schedule type, and set the interval to update the live schedule
 function onNewDay() {
     today = new Date();
+    // Reload every 7 days
+    if (today - last_reload >= 7 * 24 * 60 * 60 * 1000) location.reload();
 
     // Update the displayed date
     date_display.textContent = new Intl.DateTimeFormat("en-US", {weekday: "long", month: "long", day: "numeric"}).format((override_date ? new Date(override_date) : today));
@@ -1076,6 +1078,7 @@ function getTimeDiff(time1, time2) {
 
 window.onload = () => {
     initialization_time = Date.now();
+    last_reload = initialization_time;
 
     // Overriden date and schedule formats must match as specified below
     let date_regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
