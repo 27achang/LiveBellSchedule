@@ -95,7 +95,6 @@ function onNewDay() {
         case "Gold":
             makeGoldScheduleTable(blocks);
             schedule_times = gold_schedule;
-            updateBlueGreenSchedule(blocks);
             break;
         case "F-AM":
             makeFoundersAMScheduleTable(blocks);
@@ -944,42 +943,6 @@ function updateBlueGreenSchedule(blocks_input) {
         update_frequency = 30;
         update_interval = setInterval(updateBlueGreenSchedule, 30 * 1000);
     }
-}
-
-function updateGoldSchedule(blocks_input) {
-    // If there is no previously recorded period or the period has since changed, determine the new period
-    let period_unchanged = timeIsBeforePresent(schedule_times[current_periods + "_end"]);
-    if (!current_periods || period_unchanged) {
-        current_periods = [];
-        let keys = Object.keys(schedule_times);
-        for (let i = 0; i < keys.length; i += 2) {
-            // If we are not after the start time of the iterated period, go the next period
-            if (timeIsAfterPresent(schedule_times[keys[i]])) continue;
-            // If we are not before the end time of the iterated period, go the next period
-            if (timeIsBeforePresent(schedule_times[keys[i + 1]])) continue;
-            // If we have passed the above two conditions, we are within period that has bounds specified by keys[i] and keys[i + 1]
-            current_periods.push(keys[i].substring(0, keys[i].lastIndexOf("_")));
-        }
-
-        // Reset table coloring
-        schedule_table.querySelectorAll("td.active").forEach((cell) => cell.classList.remove("active"));
-
-        // If we are only in a passing period (no upper or lower period), extend the delay on the interval and terminate execution early (TODO - consider adding visual for passing periods)
-        // If we are after the school day, clear the interval and terminate execution early
-        if (current_periods.length == 0) {
-            clearInterval(update_interval);
-            let keys = Object.keys(schedule_times);
-            if (timeIsAfterPresent(schedule_times[keys[keys.length - 1]])) update_interval = setInterval(updateBlueGreenSchedule, (10 * 60 * 1000 + 10 * 1000));
-            return;
-        }
-        // Set cells as active
-        current_periods.forEach((period) => {
-            document.getElementById(period + "_time").classList.add("active");
-            document.getElementById(period + "_label").classList.add("active");
-        });
-    }
-
-    update_interval = setInterval(updateBlueGreenSchedule, 30 * 1000);
 }
 
 /**
